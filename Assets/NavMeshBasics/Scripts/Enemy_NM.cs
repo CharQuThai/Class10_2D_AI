@@ -26,6 +26,7 @@ public class Enemy_NM : MonoBehaviour
 
     private void SetState(EnemyState newState)
     {
+        //Debug.Log("state: " + newState);
         state = newState;
     }
 
@@ -42,6 +43,7 @@ public class Enemy_NM : MonoBehaviour
         {
             case EnemyState.IDLE: Update_Idle(); break;
             case EnemyState.CHASE: Update_Chase(); break;
+            case EnemyState.ATTACK: UpdateAttack(); break;
             default: Debug.Log("Invalid state!"); break;
         }
     }
@@ -52,8 +54,9 @@ public class Enemy_NM : MonoBehaviour
         if(distanceToTarget <= chaseRange)
         {
             SetState(EnemyState.CHASE);
-        }
-        // stop the agent (following)
+            
+        }// stop the agent (following)
+        
     }
 
     void Update_Chase()
@@ -64,20 +67,35 @@ public class Enemy_NM : MonoBehaviour
         {
             SetState(EnemyState.IDLE);
         }
-        else if(distanceToTarget <= attackRange)
+        else if (distanceToTarget <= attackRange)
         {
-            SetState(EnemyState.ATTACK);
-            Debug.Log("Attacking Player!!!!!!!!!!!!!");
+            UpdateAttack();
         }
     }
 
     private void UpdateAttack()
     {
-        if (distanceToTarget >= attackRange)
+        SetState(EnemyState.ATTACK);
+        Debug.Log("Attacking Player!!!!!!!!!!!!!");
+
+        if (distanceToTarget <= chaseRange)
         {
             SetState(EnemyState.CHASE);
+
         }
-        
+        else if (distanceToTarget > chaseRange)
+        {
+            SetState(EnemyState.IDLE);
+        }
+        //if (distanceToTarget >= attackRange)
+        //{
+        //    SetState(EnemyState.CHASE);
+        //}
+        //else if (distanceToTarget <= attackRange)
+        //{
+
+
+        //}
     }
 
     private void OnDrawGizmos()
@@ -88,7 +106,7 @@ public class Enemy_NM : MonoBehaviour
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(transform.position, attackRange);
 
-        UpdateAttack();
+        
         
     }
 }
